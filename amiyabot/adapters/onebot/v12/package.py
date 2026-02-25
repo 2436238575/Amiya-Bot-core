@@ -25,7 +25,7 @@ async def package_onebot12_message(instance: BotAdapterProtocol, data: dict):
 
         msg.message_id = str(data['message_id'])
         msg.user_id = str(data['user_id'])
-        msg.avatar = await instance.api.get_user_avatar(data)
+        msg.user_avatar_getter = instance.api.get_user_avatar(data)
 
         message_chain = data['message']
         text = ''

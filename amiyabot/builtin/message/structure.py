@@ -2,10 +2,10 @@ import abc
 import time
 import jieba
 
-from typing import Any, List, Union, Optional, Callable
+from typing import Any, List, Union, Optional, Callable, Coroutine
 from dataclasses import dataclass
 from amiyabot.typeIndexes import *
-from amiyautils import remove_punctuation, chinese_to_digits
+from amiyautils import remove_punctuation, chinese_to_digits, EventLoop
 
 
 def cut_by_jieba(text: str):
@@ -65,10 +65,21 @@ class MessageStructure:
         self.src_guild_id = ''
 
         self.nickname = ''
-        self.avatar = ''
+        self.user_avatar = ''
+        self.user_avatar_getter: Optional[Coroutine] = None
 
         self.verify: Optional[Verify] = None
         self.time = int(time.time())
+
+    @property
+    def avatar(self):
+        if not self.user_avatar and self.user_avatar_getter:
+            self.user_avatar = EventLoop.run(self.user_avatar_getter)
+        return self.user_avatar
+
+    @avatar.setter
+    def avatar(self, value: str):
+        self.user_avatar = value
 
     def __str__(self):
         text = self.text.replace('\n', ' ')
