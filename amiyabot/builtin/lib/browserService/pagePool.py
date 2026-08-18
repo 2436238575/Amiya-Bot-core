@@ -74,12 +74,10 @@ class PagePool:
     async def release_page(self, page: Page):
         try:
             await page.context.clear_cookies()
-            await page.evaluate(
-                '''
+            await page.evaluate('''
                 localStorage.clear();
                 sessionStorage.clear();
-                '''
-            )
+                ''')
             await page.goto('about:blank')
             await self.queue.put(page)
         except Exception as e:

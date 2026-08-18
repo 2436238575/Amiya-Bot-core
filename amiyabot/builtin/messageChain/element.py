@@ -128,9 +128,7 @@ class Html:
                                     'Can not execute "window.init(data)" because this function does not exist.'
                                 )
                             }
-                        ''' % json.dumps(
-                            self.data
-                        )
+                        ''' % json.dumps(self.data)
                         await page.evaluate(injected)
 
                     # 等待渲染
