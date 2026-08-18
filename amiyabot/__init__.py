@@ -13,6 +13,7 @@ from amiyabot.adapters.kook import KOOKBotInstance
 from amiyabot.adapters.mirai import MiraiBotInstance
 from amiyabot.adapters.cqhttp import CQHttpBotInstance
 from amiyabot.adapters.onebot.v11 import OneBot11Instance
+from amiyabot.adapters.onebot.v11.reverse_ws import ReverseWebSocketAPI, ReverseWebSocketInstance, ReverseWebSocketResponse, reverse_ws
 from amiyabot.adapters.onebot.v12 import OneBot12Instance
 from amiyabot.adapters.tencent.qqGuild import QQGuildBotInstance, QQGuildSandboxBotInstance
 from amiyabot.adapters.comwechat import ComWeChatBotInstance

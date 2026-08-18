@@ -14,6 +14,7 @@
 - [Go-CQHttp](https://www.amiyabot.com/develop/adapters/gocq)
 - [ComWeChatBot Client](https://www.amiyabot.com/develop/adapters/comwechat)
 - [OneBot 11](https://www.amiyabot.com/develop/adapters/onebot11)
+- [OneBot 11 反向 WebSocket](https://github.com/botuniverse/onebot-11)
 - [OneBot 12](https://www.amiyabot.com/develop/adapters/onebot12)
 
 官方文档：[www.amiyabot.com](https://www.amiyabot.com/)
@@ -85,3 +86,15 @@ async def _(data: Message):
 asyncio.run(bot.start())
 ```
 
+通用反向 WebSocket 适配器由 Amiya 监听端口，OneBot 实现配置为 WebSocket 客户端连接：
+
+```python
+from amiyabot import AmiyaBot
+from amiyabot.adapters.reverse_ws import reverse_ws
+
+bot = AmiyaBot(
+    appid='******',
+    token='******',
+    adapter=reverse_ws(host='0.0.0.0', ws_port=8080),
+)
+```

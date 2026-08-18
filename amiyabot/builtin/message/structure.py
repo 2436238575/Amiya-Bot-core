@@ -66,7 +66,9 @@ class MessageStructure:
 
         self.nickname = ''
         self.user_avatar = ''
-        self.user_avatar_getter: Optional[Coroutine] = None
+        # Keep a factory so an unused avatar lookup does not create an
+        # un-awaited coroutine while the message is being dispatched.
+        self.user_avatar_getter: Optional[Union[Coroutine, Callable[[], Coroutine]]] = None
 
         self.verify: Optional[Verify] = None
         self.time = int(time.time())
@@ -74,7 +76,8 @@ class MessageStructure:
     @property
     def avatar(self):
         if not self.user_avatar and self.user_avatar_getter:
-            self.user_avatar = EventLoop.run(self.user_avatar_getter)
+            getter = self.user_avatar_getter
+            self.user_avatar = EventLoop.run(getter() if callable(getter) else getter)
         return self.user_avatar
 
     @avatar.setter
