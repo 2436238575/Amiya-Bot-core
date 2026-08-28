@@ -13,6 +13,7 @@ default_headers = {
     'AppleWebKit/603.1.30 (KHTML, like Gecko) Version/10.0 Mobile/14E304 Safari/602.1'
 }
 ssl_context = ssl.create_default_context(cafile=certifi.where())
+DEFAULT_ASYNC_DOWNLOAD_TIMEOUT = aiohttp.ClientTimeout(total=60, connect=10)
 
 
 def download_sync(
@@ -52,6 +53,7 @@ def download_sync(
 
 async def download_async(url: str, headers: Optional[Dict[str, str]] = None, stringify: bool = False, **kwargs):
     async with log.catch('download error:', ignore=[requests.exceptions.SSLError]):
+        kwargs.setdefault('timeout', DEFAULT_ASYNC_DOWNLOAD_TIMEOUT)
         async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(ssl=ssl_context), trust_env=True) as session:
             async with session.get(url, headers={**default_headers, **(headers or {})}, **kwargs) as res:
                 if res.status == 200:
