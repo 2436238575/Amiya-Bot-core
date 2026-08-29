@@ -130,6 +130,7 @@ class Message(MessageStructure):
 
         while event.check_alive():
             if not event.on_focus(self.message_id):
+                event.cancel()
                 raise WaitEventOutOfFocus(event, self.message_id)
 
             await asyncio.sleep(0)
