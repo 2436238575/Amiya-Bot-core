@@ -136,8 +136,15 @@ async def choice_handlers(data: Message, handlers: List[MessageHandlerItem], wai
     if waiter:
         candidate.append((Verify(True, waiter.level), waiter))
 
+    # 静态关键词校验只读消息属性，共享一份副本即可；
+    # custom_verify 可能改写 Message，保持逐个拷贝隔离（0104ec2 引入的语义）
+    verify_data = data.copy()
+
     for item in handlers:
-        check = await item.verify(data.copy())
+        if item.custom_verify:
+            check = await item.verify(data.copy())
+        else:
+            check = await item.verify(verify_data)
         if check:
             candidate.append((check, item))
 
