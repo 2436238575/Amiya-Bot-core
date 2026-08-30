@@ -55,7 +55,9 @@ class WaitEvent:
         self.alive = False
 
         if del_event:
-            del wait_events_bucket[self.target_id]
+            # 只移除仍指向自己的 bucket 条目，避免误删同 target 上更新的 waiter
+            if wait_events_bucket[self.target_id] is self:
+                del wait_events_bucket[self.target_id]
 
 
 class ChannelWaitEvent(WaitEvent):
