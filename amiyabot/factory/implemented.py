@@ -83,10 +83,13 @@ class MessageHandlerItemImpl(MessageHandlerItem):
 
         # 若不通过以上检查，且关键字不为全等句式（Equal）
         # 则允许当关键字为列表时，筛选列表内的全等句式继续执行校验，否则校验不通过
-        if need_check_prefix and not flag and not isinstance(self.keywords, Equal):
-            equal_filter = [n for n in self.keywords if isinstance(n, Equal)] if isinstance(self.keywords, list) else []
+        # 注意：只筛选本地副本，绝不能回写 self.keywords —— 该对象被所有消息共享，
+        # 回写会让此 handler 之后的所有消息永久丢失非全等关键字
+        keywords = self.keywords
+        if need_check_prefix and not flag and not isinstance(keywords, Equal):
+            equal_filter = [n for n in keywords if isinstance(n, Equal)] if isinstance(keywords, list) else []
             if equal_filter:
-                self.keywords = equal_filter
+                keywords = equal_filter
             else:
                 return result
 
@@ -110,7 +113,7 @@ class MessageHandlerItemImpl(MessageHandlerItem):
 
             return result
 
-        return self.__check(result, data, self.keywords)
+        return self.__check(result, data, keywords)
 
     async def action(self, data: Message):
         return await self.function(data)
