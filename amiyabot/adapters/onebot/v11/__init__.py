@@ -37,6 +37,8 @@ class OneBot11Instance(BotAdapterProtocol):
         self.headers = {'Authorization': f'Bearer {token}'}
 
         self.connection: Optional[websockets.WebSocketClientProtocol] = None
+        # 事件循环对 task 只持弱引用，自持强引用防止消息处理任务被 GC 中途回收
+        self.message_tasks: set = set()
 
         self.host = host
         self.ws_port = ws_port
@@ -78,11 +80,13 @@ class OneBot11Instance(BotAdapterProtocol):
                         return None
 
                     async with log.catch(ignore=[json.JSONDecodeError]):
-                        asyncio.create_task(
+                        task = asyncio.create_task(
                             handler(
                                 await package_method(self, self.appid, json.loads(message)),
                             ),
                         )
+                        self.message_tasks.add(task)
+                        task.add_done_callback(self.message_tasks.discard)
 
                 await websocket.close()
 
