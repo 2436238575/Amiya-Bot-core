@@ -78,7 +78,8 @@ class Message(MessageStructure):
         asyncio.create_task(event.timer(max_time))
 
         while event.check_alive():
-            await asyncio.sleep(0)
+            # timer 每 0.2s 才更新一次 alive；sleep(0) 会全程空转烧 CPU，按粒度小睡等待
+            await asyncio.sleep(0.1)
             data = event.get()
             if data:
                 if data_filter:
@@ -133,7 +134,8 @@ class Message(MessageStructure):
                 event.cancel()
                 raise WaitEventOutOfFocus(event, self.message_id)
 
-            await asyncio.sleep(0)
+            # 同 wait()：避免 sleep(0) 空转
+            await asyncio.sleep(0.1)
             data = event.get()
             if data:
                 if data_filter:
